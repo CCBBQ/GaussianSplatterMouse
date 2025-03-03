@@ -64,7 +64,7 @@ def impl_glfw_init():
         exit(1)
 
     return window
-
+'''
 def cursor_pos_callback(window, xpos, ypos):
     if imgui.get_io().want_capture_mouse:
         g_camera.is_leftmouse_pressed = False
@@ -77,7 +77,67 @@ def mouse_button_callback(window, button, action, mod):
     pressed = action == glfw.PRESS
     g_camera.is_leftmouse_pressed = (button == glfw.MOUSE_BUTTON_LEFT and pressed)
     g_camera.is_rightmouse_pressed = (button == glfw.MOUSE_BUTTON_RIGHT and pressed)
+    '''
+def mouse_button_callback(window, button, action, mod):
+    if imgui.get_io().want_capture_mouse:
+        return
+    pressed = action == glfw.PRESS
+    g_camera.is_leftmouse_pressed = (button == glfw.MOUSE_BUTTON_LEFT and pressed)
+    g_camera.is_rightmouse_pressed = (button == glfw.MOUSE_BUTTON_RIGHT and pressed)
 
+    if pressed and button == glfw.MOUSE_BUTTON_LEFT:
+        # 获取鼠标点击的位置
+        xpos, ypos = glfw.get_cursor_pos(window)
+        print(f"Mouse clicked at: ({xpos}, {ypos})")
+
+        # 将屏幕坐标转换为 3D 世界坐标
+        world_coords = screen_to_world(xpos, ypos, g_camera)
+        print(f"3D World coordinates: {world_coords}")
+
+        # 对 3D 坐标进行高斯溅射处理
+        splatted_coords = gaussian_splat(world_coords)
+        print(f"3D Splatted coordinates: {splatted_coords}")
+
+def screen_to_world(x, y, camera):
+    """
+    将屏幕坐标转换为 3D 世界坐标。
+    :param x: 屏幕 x 坐标
+    :param y: 屏幕 y 坐标
+    :param camera: 相机对象
+    :return: 3D 世界坐标 (x, y, z)
+    """
+    # 将屏幕坐标转换为归一化设备坐标 (NDC)
+    ndc_x = (2.0 * x) / camera.w - 1.0
+    ndc_y = 1.0 - (2.0 * y) / camera.h
+
+    # 创建射线起点和方向
+    ray_nds = np.array([ndc_x, ndc_y, -1.0, 1.0])
+    ray_clip = np.array([ray_nds[0], ray_nds[1], -1.0, 1.0])
+
+    # 将射线从裁剪空间转换到世界空间
+    ray_eye = np.linalg.inv(camera.get_project_matrix()) @ ray_clip
+    ray_eye = np.array([ray_eye[0], ray_eye[1], -1.0, 0.0])
+
+    ray_world = np.linalg.inv(camera.get_view_matrix()) @ ray_eye
+    ray_world = np.array([ray_world[0], ray_world[1], ray_world[2], 0.0])
+    ray_world = ray_world / np.linalg.norm(ray_world)
+
+    # 假设相机位置在原点
+    camera_pos = np.array([0.0, 0.0, 0.0, 1.0])
+    world_coords = camera_pos + ray_world * 10  # 10 是任意选择的距离
+
+    return world_coords[:3]
+
+def gaussian_splat(world_coords):
+    """
+    对 3D 坐标进行高斯溅射处理。
+    :param world_coords: 3D 世界坐标 (x, y, z)
+    :return: 高斯溅射后的 3D 坐标 (x, y, z)
+    """
+    # 这里可以实现高斯溅射的逻辑
+    # 假设我们只是简单地将坐标进行一些随机偏移
+    splatted_coords = world_coords + np.random.normal(0, 0.1, 3)
+    return splatted_coords
 def wheel_callback(window, dx, dy):
     g_camera.process_wheel(dx, dy)
 
