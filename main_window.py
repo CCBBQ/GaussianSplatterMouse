@@ -153,6 +153,9 @@ def gaussian_splat(world_coords):
     splatted_coords = world_coords + np.random.normal(0, 0.1, 3)
     return splatted_coords
 
+def wheel_callback(window, dx, dy):
+    g_camera.process_wheel(dx, dy)
+    
 def key_callback(window, key, scancode, action, mods):
     if action == glfw.REPEAT or action == glfw.PRESS:
         if key == glfw.KEY_Q:
