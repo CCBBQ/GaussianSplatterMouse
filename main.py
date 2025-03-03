@@ -1,3 +1,4 @@
+import time
 import glfw
 import OpenGL.GL as gl
 from imgui.integrations.glfw import GlfwRenderer
