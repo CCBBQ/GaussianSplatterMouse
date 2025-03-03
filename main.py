@@ -88,15 +88,18 @@ def mouse_button_callback(window, button, action, mod):
     if pressed and button == glfw.MOUSE_BUTTON_LEFT:
         # 获取鼠标点击的位置
         xpos, ypos = glfw.get_cursor_pos(window)
-        print(f"Mouse clicked at: ({xpos}, {ypos})")
+        print(f"Mouse clicked at: ({xpos}, {ypos})",flush=True)
+        time.sleep(1)
 
         # 将屏幕坐标转换为 3D 世界坐标
         world_coords = screen_to_world(xpos, ypos, g_camera)
-        print(f"3D World coordinates: {world_coords}")
+        print(f"3D World coordinates: {world_coords}",flush=True)
+        time.sleep(1)
 
         # 对 3D 坐标进行高斯溅射处理
         splatted_coords = gaussian_splat(world_coords)
-        print(f"3D Splatted coordinates: {splatted_coords}")
+        print(f"3D Splatted coordinates: {splatted_coords}",flush=True)
+        time.sleep(1)
 
 def screen_to_world(x, y, camera):
     """
