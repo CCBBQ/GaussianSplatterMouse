@@ -1,4 +1,3 @@
-import time
 import glfw
 import OpenGL.GL as gl
 from imgui.integrations.glfw import GlfwRenderer
@@ -89,18 +88,18 @@ def mouse_button_callback(window, button, action, mod):
     if pressed and button == glfw.MOUSE_BUTTON_LEFT:
         # 获取鼠标点击的位置
         xpos, ypos = glfw.get_cursor_pos(window)
-        print(f"Mouse clicked at: ({xpos}, {ypos})",flush=True)
-        time.sleep(1)
+        sys.stdout.write(f"Mouse clicked at: ({xpos}, {ypos})")
+        sys.stdout.flush()
 
         # 将屏幕坐标转换为 3D 世界坐标
         world_coords = screen_to_world(xpos, ypos, g_camera)
-        print(f"3D World coordinates: {world_coords}",flush=True)
-        time.sleep(1)
+        sys.stdout.write(f"3D World coordinates: {world_coords}")
+        sys.stdout.flush()
 
         # 对 3D 坐标进行高斯溅射处理
         splatted_coords = gaussian_splat(world_coords)
-        print(f"3D Splatted coordinates: {splatted_coords}",flush=True)
-        time.sleep(1)
+        sys.stdout.write(f"3D Splatted coordinates: {splatted_coords}")
+        sys.stdout.flush()
 
 def screen_to_world(x, y, camera):
     """
