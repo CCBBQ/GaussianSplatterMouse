@@ -64,13 +64,13 @@ def impl_glfw_init():
         exit(1)
 
     return window
-'''
+
 def cursor_pos_callback(window, xpos, ypos):
     if imgui.get_io().want_capture_mouse:
         g_camera.is_leftmouse_pressed = False
         g_camera.is_rightmouse_pressed = False
     g_camera.process_mouse(xpos, ypos)
-
+'''
 def mouse_button_callback(window, button, action, mod):
     if imgui.get_io().want_capture_mouse:
         return
