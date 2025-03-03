@@ -78,6 +78,8 @@ def mouse_button_callback(window, button, action, mod):
     g_camera.is_leftmouse_pressed = (button == glfw.MOUSE_BUTTON_LEFT and pressed)
     g_camera.is_rightmouse_pressed = (button == glfw.MOUSE_BUTTON_RIGHT and pressed)
     '''
+point1 = None
+point2 = None
 def mouse_button_callback(window, button, action, mod):
     global point1, point2
     if imgui.get_io().want_capture_mouse:
