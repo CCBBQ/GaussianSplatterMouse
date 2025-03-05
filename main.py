@@ -150,6 +150,14 @@ def key_callback(window, key, scancode, action, mods):
             g_camera.process_roll_key(1)
         elif key == glfw.KEY_E:
             g_camera.process_roll_key(-1)
+        elif key == glfw.KEY_W:
+            g_camera.process_move_forward()
+        elif key == glfw.KEY_S:
+            g_camera.process_move_backward()
+        elif key == glfw.KEY_A:
+            g_camera.process_move_left()
+        elif key == glfw.KEY_D:
+            g_camera.process_move_right()
 
 def update_camera_pose_lazy():
     if g_camera.is_pose_dirty:
