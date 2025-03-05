@@ -6,6 +6,7 @@ import ctypes
 
 class Camera:
     def __init__(self, h, w):
+        self.move_speed = 0.1
         self.znear = 0.01
         self.zfar = 100
         self.h = h
