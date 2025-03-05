@@ -176,7 +176,7 @@ class Camera:
         """
         # Extract the forward vector from the view matrix
         view_matrix = self.get_view_matrix()
-        forward = np.array([-view_matrix[0, 2], [-view_matrix[1, 2], [-view_matrix[2, 2]])
+        forward = np.array([-view_matrix[0, 2], -view_matrix[1, 2], -view_matrix[2, 2]])
         return forward / np.linalg.norm(forward)  # Normalize the vector
 
 
