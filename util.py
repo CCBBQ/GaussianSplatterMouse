@@ -135,6 +135,40 @@ class Camera:
         self.w = max(width, 1)
         self.is_intrin_dirty = True
 
+    def process_move_forward(self):
+        """Move the camera forward along its view direction."""
+        forward = self.get_forward_vector()
+        self.position += forward * self.move_speed
+        self.is_pose_dirty = True
+
+    def process_move_backward(self):
+        """Move the camera backward along its view direction."""
+        forward = self.get_forward_vector()
+        self.position -= forward * self.move_speed
+        self.is_pose_dirty = True
+
+    def process_move_left(self):
+        """Move the camera to the left (strafe left)."""
+        right = self.get_right_vector()
+        self.position -= right * self.move_speed
+        self.is_pose_dirty = True
+
+    def process_move_right(self):
+        """Move the camera to the right (strafe right)."""
+        right = self.get_right_vector()
+        self.position += right * self.move_speed
+        self.is_pose_dirty = True
+
+    def get_forward_vector(self):
+        """Get the forward vector of the camera."""
+        return self.get_view_direction()
+
+    def get_right_vector(self):
+        """Get the right vector of the camera."""
+        forward = self.get_forward_vector()
+        up = np.array([0, 1, 0])  # Assuming Y is up
+        return np.cross(forward, up)
+
 
 def load_shaders(vs, fs):
     vertex_shader = open(vs, 'r').read()        
