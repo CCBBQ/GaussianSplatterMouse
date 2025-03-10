@@ -96,6 +96,39 @@ def mouse_button_callback(window, button, action, mod):
         print(f"3D World coordinates: {world_coords}")
 
 
+def screen_to_world(x, y, camera):
+    """
+    将屏幕坐标转换为 3D 世界坐标。
+    :param x: 屏幕 x 坐标
+    :param y: 屏幕 y 坐标
+    :param camera: 相机对象
+    :return: 3D 世界坐标 (x, y, z)
+    """
+    # 1. 将屏幕坐标转换为归一化设备坐标 (NDC)
+    ndc_x = (2.0 * x) / camera.w - 1.0
+    ndc_y = 1.0 - (2.0 * y) / camera.h
+
+    # 2. 创建裁剪空间坐标
+    clip_coords = np.array([ndc_x, ndc_y, -1.0, 1.0])  # Z 值设为 -1（近裁剪平面）
+
+    # 3. 将裁剪空间坐标转换到相机空间坐标
+    eye_coords = np.linalg.inv(camera.get_project_matrix()) @ clip_coords
+    eye_coords = np.array([eye_coords[0], eye_coords[1], -1.0, 0.0])  # 设置为射线方向
+
+    # 4. 将相机空间坐标转换到世界坐标
+    world_coords = np.linalg.inv(camera.get_view_matrix()) @ eye_coords
+    world_coords = np.array([world_coords[0], world_coords[1], world_coords[2], 0.0])  # 设置为射线方向
+
+    # 5. 归一化射线方向
+    ray_dir = world_coords[:3] / np.linalg.norm(world_coords[:3])
+
+    # 6. 使用相机的实际位置作为射线起点
+    camera_pos = camera.position  # 使用相机的实际位置
+    world_coords = camera_pos + ray_dir * 10  # 10 是任意选择的距离
+
+    return world_coords[:3]
+
+
 def gaussian_splat(world_coords):
     """
     对 3D 坐标进行高斯溅射处理。
