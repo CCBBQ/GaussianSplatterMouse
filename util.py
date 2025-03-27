@@ -32,6 +32,7 @@ class Camera:
         self.zoom_sensitivity = 0.08
         self.roll_sensitivity = 0.03
         self.target_dist = 3.
+        selp.move_speed=0.1
     
     def _global_rot_mat(self):
         x = np.array([1, 0, 0])
