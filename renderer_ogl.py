@@ -207,7 +207,7 @@ class OpenGLRenderer(GaussianRenderBase):
         inv_view_proj = np.linalg.inv(camera.get_project_matrix() @ camera.get_view_matrix())
         world_pos_h = inv_view_proj @ ndc_pos  # 齐次坐标
         
-        return world_pos_h  # 此时z值是真实的世界坐标系值
+        return 100*world_pos_h  # 此时z值是真实的世界坐标系值
 
     def update_vsync(self):
         if wglSwapIntervalEXT is not None:
