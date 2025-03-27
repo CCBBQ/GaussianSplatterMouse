@@ -148,7 +148,40 @@ class OpenGLRenderer(GaussianRenderBase):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.update_vsync()
-
+    def get_splatted_coords(self, screen_pos, camera):
+        """根据屏幕坐标计算高斯splatting后的3D坐标"""
+        # 将屏幕坐标转换为NDC坐标
+        x_ndc = 2.0 * screen_pos[0] / camera.w - 1.0
+        y_ndc = 1.0 - 2.0 * screen_pos[1] / camera.h
+        
+        # 获取视图和投影矩阵
+        view_mat = camera.get_view_matrix()
+        proj_mat = camera.get_project_matrix()
+        
+        # 计算逆变换
+        inv_view_proj = np.linalg.inv(proj_mat @ view_mat)
+        
+        # 创建齐次坐标
+        near_point = np.array([x_ndc, y_ndc, -1.0, 1.0])  # 近平面
+        far_point = np.array([x_ndc, y_ndc, 1.0, 1.0])     # 远平面
+        
+        # 转换为世界坐标
+        near_world = inv_view_proj @ near_point
+        near_world /= near_world[3]
+        far_world = inv_view_proj @ far_point
+        far_world /= far_world[3]
+        
+        # 计算射线方向
+        ray_dir = far_world[:3] - near_world[:3]
+        ray_dir = ray_dir / np.linalg.norm(ray_dir)
+        
+        # 这里简化处理，实际应根据高斯分布计算加权平均坐标
+        # 在实际应用中，您可能需要从着色器中获取更精确的结果
+        
+        # 简单返回射线上的一个点(近平面+一定距离)
+        splatted_pos = near_world[:3] + ray_dir * 0.5
+        
+        return splatted_pos
     def update_vsync(self):
         if wglSwapIntervalEXT is not None:
             wglSwapIntervalEXT(1 if self.reduce_updates else 0)
