@@ -6,7 +6,6 @@ import ctypes
 
 class Camera:
     def __init__(self, h, w):
-        self.move_speed = 0.1
         self.znear = 0.01
         self.zfar = 100
         self.h = h
@@ -169,16 +168,6 @@ class Camera:
         forward = self.get_forward_vector()
         up = np.array([0, 1, 0])  # Assuming Y is up
         return np.cross(forward, up)
-        
-    def get_view_direction(self):
-        """
-        Get the forward direction vector of the camera.
-        This is derived from the camera's view matrix.
-        """
-        # Extract the forward vector from the view matrix
-        view_matrix = self.get_view_matrix()
-        forward = np.array([-view_matrix[0, 2], -view_matrix[1, 2], -view_matrix[2, 2]])
-        return forward / np.linalg.norm(forward)  # Normalize the vector
 
 
 def load_shaders(vs, fs):
@@ -385,5 +374,4 @@ def update_texture2d(img, texid, offset):
         GL_TEXTURE_2D, 0, x1, y1, w, h,
         GL_RGB, GL_UNSIGNED_BYTE, img
     )
-
 
