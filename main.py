@@ -70,16 +70,9 @@ def cursor_pos_callback(window, xpos, ypos):
         g_camera.is_leftmouse_pressed = False
         g_camera.is_rightmouse_pressed = False
     g_camera.process_mouse(xpos, ypos)
-'''
-def mouse_button_callback(window, button, action, mod):
-    if imgui.get_io().want_capture_mouse:
-        return
-    pressed = action == glfw.PRESS
-    g_camera.is_leftmouse_pressed = (button == glfw.MOUSE_BUTTON_LEFT and pressed)
-    g_camera.is_rightmouse_pressed = (button == glfw.MOUSE_BUTTON_RIGHT and pressed)
-    '''
 
-def mouse_button_callback(window, button, action, mod):
+
+'''def mouse_button_callback(window, button, action, mod):
     if imgui.get_io().want_capture_mouse:
         return
     pressed = action == glfw.PRESS
@@ -93,8 +86,28 @@ def mouse_button_callback(window, button, action, mod):
 
         # 将屏幕坐标转换为 3D 世界坐标
         world_coords = screen_to_world(xpos, ypos, g_camera)
-        print(f"3D World coordinates: {world_coords}")
+        print(f"3D World coordinates: {world_coords}")'''
 
+# 在全局变量部分添加
+g_last_click_pos = None
+g_show_click_info = False
+
+# 在mouse_button_callback函数中添加左键点击处理
+def mouse_button_callback(window, button, action, mod):
+    global g_last_click_pos, g_show_click_info
+    
+    if imgui.get_io().want_capture_mouse:
+        return
+    
+    pressed = action == glfw.PRESS
+    g_camera.is_leftmouse_pressed = (button == glfw.MOUSE_BUTTON_LEFT and pressed)
+    g_camera.is_rightmouse_pressed = (button == glfw.MOUSE_BUTTON_RIGHT and pressed)
+    
+    # 左键点击时记录位置
+    if button == glfw.MOUSE_BUTTON_LEFT and pressed:
+        xpos, ypos = glfw.get_cursor_pos(window)
+        g_last_click_pos = (xpos, ypos)
+        g_show_click_info = True
 
 def screen_to_world(x, y, camera):
     """
@@ -250,6 +263,16 @@ def main():
             if imgui.begin("Control", True):
                 # rendering backend
                 changed, g_renderer_idx = imgui.combo("backend", g_renderer_idx, ["ogl", "cuda"][:len(g_renderer_list)])
+                if g_show_click_info and g_last_click_pos:
+                    imgui.text(f"Last click at: {g_last_click_pos[0]:.1f}, {g_last_click_pos[1]:.1f}")
+                    
+                    # 计算并显示高斯splatting后的坐标
+                    if g_renderer and hasattr(g_renderer, 'get_splatted_coords'):
+                        splatted_coords = g_renderer.get_splatted_coords(g_last_click_pos, g_camera)
+                        imgui.text(f"Splatted coords: {splatted_coords[0]:.3f}, {splatted_coords[1]:.3f}, {splatted_coords[2]:.3f}")
+                
+                imgui.end()
+
                 if changed:
                     g_renderer = g_renderer_list[g_renderer_idx]
                     update_activated_renderer_state(gaussians)
