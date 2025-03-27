@@ -108,6 +108,11 @@ def mouse_button_callback(window, button, action, mod):
         xpos, ypos = glfw.get_cursor_pos(window)
         g_last_click_pos = (xpos, ypos)
         g_show_click_info = True
+        global g_click_world_pos
+        # 计算世界坐标
+        if hasattr(g_renderer, 'get_splatted_world_coords'):
+            g_click_world_pos = g_renderer.get_splatted_world_coords((xpos, ypos), g_camera)
+        
 
 def screen_to_world(x, y, camera):
     """
@@ -270,7 +275,9 @@ def main():
                     if g_renderer and hasattr(g_renderer, 'get_splatted_coords'):
                         splatted_coords = g_renderer.get_splatted_coords(g_last_click_pos, g_camera)
                         imgui.text(f"Splatted coords: {splatted_coords[0]:.3f}, {splatted_coords[1]:.3f}, {splatted_coords[2]:.3f}")
-                
+                    imgui.text(f"World X: {g_click_world_pos[0]:.3f}")
+                    imgui.text(f"World Y: {g_click_world_pos[1]:.3f}")
+                    imgui.text(f"World Z: {g_click_world_pos[2]:.3f}")
 
                 if changed:
                     g_renderer = g_renderer_list[g_renderer_idx]
