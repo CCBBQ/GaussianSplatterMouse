@@ -271,7 +271,6 @@ def main():
                         splatted_coords = g_renderer.get_splatted_coords(g_last_click_pos, g_camera)
                         imgui.text(f"Splatted coords: {splatted_coords[0]:.3f}, {splatted_coords[1]:.3f}, {splatted_coords[2]:.3f}")
                 
-                imgui.end()
 
                 if changed:
                     g_renderer = g_renderer_list[g_renderer_idx]
