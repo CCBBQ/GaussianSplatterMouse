@@ -182,6 +182,36 @@ class OpenGLRenderer(GaussianRenderBase):
         splatted_pos = near_world[:3] + ray_dir * 0.5
         
         return splatted_pos
+        
+    def get_splatted_world_coords(self, screen_pos, camera):
+        """将屏幕坐标逆向投影到世界坐标系（考虑高斯 splatting 的影响）"""
+        # 1. 转换为NDC坐标
+        x_ndc = 2.0 * screen_pos[0] / camera.w - 1.0
+        y_ndc = 1.0 - 2.0 * screen_pos[1] / camera.h
+        
+        # 2. 获取逆变换矩阵
+        view_mat = camera.get_view_matrix()
+        proj_mat = camera.get_project_matrix()
+        inv_view_proj = np.linalg.inv(proj_mat @ view_mat)
+        
+        # 3. 创建近平面和远平面的齐次坐标
+        near_clip = np.array([x_ndc, y_ndc, -1.0, 1.0])  # OpenGL默认近平面z=-1
+        far_clip = np.array([x_ndc, y_ndc, 1.0, 1.0])    # 远平面z=1
+        
+        # 4. 转换为世界坐标
+        near_world = (inv_view_proj @ near_clip)[:3]  # 取xyz，忽略齐次分量
+        far_world = (inv_view_proj @ far_clip)[:3]
+        
+        # 5. 计算射线方向（从相机指向点击位置）
+        ray_origin = camera.position  # 相机在世界坐标系的位置
+        ray_dir = far_world - near_world
+        ray_dir /= np.linalg.norm(ray_dir)
+        
+        # 6. 模拟高斯 splatting 的投影深度（实际需结合着色器深度缓冲）
+        # 这里简化为取射线与高斯分布的交点（假设在中间深度）
+        splatted_depth = 0.5 * (near_world + far_world)
+    
+        return splatted_depth  # 返回世界坐标系下的坐标
     def update_vsync(self):
         if wglSwapIntervalEXT is not None:
             wglSwapIntervalEXT(1 if self.reduce_updates else 0)
