@@ -168,7 +168,7 @@ class Camera:
         forward = self.get_forward_vector()
         up = np.array([0, 1, 0])  # Assuming Y is up
         return np.cross(forward, up)
-        def get_view_direction(self):
+    def get_view_direction(self):
          """
          Get the forward direction vector of the camera.
          This is derived from the camera's view matrix.
